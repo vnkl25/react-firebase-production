@@ -134,26 +134,35 @@ function Game({ user }) {
     }
   };
 
-  // Added upload file
-  const uploadFile = async () => {
-    if (!file) return;
+// Added upload file
+const uploadFile = async () => {
+  if (!file) return;
 
-    try {
-      const fileRef = ref(storage, `uploads/${user.uid}/${file.name}`);
-      await uploadBytes(fileRef, file);
+  try {
+    const fileRef = ref(storage, `uploads/${user.uid}/${file.name}`);
+    await uploadBytes(fileRef, file);
 
-      alert("File uploaded!");
+    alert("File uploaded!");
 
-      loadFiles(); // refresh file list
-    } catch (err) {
-      console.error("Upload error:", err);
-    }
-  };
+    // reload files after upload
+    const listRef = ref(storage, `uploads/${user.uid}/`);
+    const res = await listAll(listRef);
 
-  // Added load files from Firebase Storage
+    const urls = await Promise.all(
+      res.items.map((item) => getDownloadURL(item))
+    );
+
+    setFiles(urls);
+  } catch (err) {
+    console.error("Upload error:", err);
+  }
+};
+
+// Added load files on mount
+useEffect(() => {
   const loadFiles = async () => {
     try {
-      const listRef = ref(storage, `uploads/${user.uid}`);
+      const listRef = ref(storage, `uploads/${user.uid}/`); 
       const res = await listAll(listRef);
 
       const urls = await Promise.all(
@@ -166,10 +175,8 @@ function Game({ user }) {
     }
   };
 
-  // Added load files when component loads
-  useEffect(() => {
-    loadFiles();
-  }, []);
+  loadFiles();
+}, [user.uid]);
 
   return (
     <div className="game">
