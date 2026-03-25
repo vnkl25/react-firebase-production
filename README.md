@@ -78,25 +78,25 @@ If you deploy this project to your own Firebase account, you must manually updat
 
 1. Go to Firebase Console
 2. Select your project
-3. Navigate to Firestore Database -> Rules
+3. Navigate to Firestore -> Rules
 4. Replace the existing rules with:
    
 ```
-    rules_version = '2';
-    service cloud.firestore {
-      match /databases/{database}/documents {
-        
-        match /users/{userId} {
-          // Anyone signed in can read, but only the owner can write
-          allow read: if request.auth != null;
-          allow write: if request.auth != null && request.auth.uid == userId;
-        }
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
     
-        match /{document=**} {
-          allow read, write: if false;
-        }
-      }
+    match /users/{userId} {
+      // Anyone signed in can read, but only the owner can write
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && request.auth.uid == userId;
     }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
 ```
 5. Click Publish
 
@@ -107,22 +107,22 @@ If you deploy this project to your own Firebase account, you must manually updat
 3. Replace the existing rules with:
 
 ```
-    rules_version = '2';
-    service firebase.storage {
-      match /b/{bucket}/o {
-    
-        // Match files in the "uploads" folder, named with the user's UID
-        match /uploads/{userId}/{allPaths=**} {
-          // Only allow the user who owns the folder to read/write
-          allow read, write: if request.auth != null && request.auth.uid == userId;
-        }
-    
-        // Deny all other access
-        match /{allPaths=**} {
-          allow read, write: if false;
-        }
-      }
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    // Match files in the "uploads" folder, named with the user's UID
+    match /uploads/{userId}/{allPaths=**} {
+      // Only allow the user who owns the folder to read/write
+      allow read, write: if request.auth != null && request.auth.uid == userId;
     }
+
+    // Deny all other access
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}
 ```
 
 4. Click Publish
