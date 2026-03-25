@@ -80,7 +80,8 @@ If you deploy this project to your own Firebase account, you must manually updat
 2. Select your project
 3. Navigate to Firestore Database -> Rules
 4. Replace the existing rules with:
-
+   
+```
     rules_version = '2';
     service cloud.firestore {
       match /databases/{database}/documents {
@@ -96,7 +97,7 @@ If you deploy this project to your own Firebase account, you must manually updat
         }
       }
     }
-
+```
 5. Click Publish
 
 ## Storage Rules
@@ -105,6 +106,7 @@ If you deploy this project to your own Firebase account, you must manually updat
 2. Navigate to Storage -> Rules
 3. Replace the existing rules with:
 
+```
     rules_version = '2';
     service firebase.storage {
       match /b/{bucket}/o {
@@ -121,6 +123,7 @@ If you deploy this project to your own Firebase account, you must manually updat
         }
       }
     }
+```
 
 4. Click Publish
 
