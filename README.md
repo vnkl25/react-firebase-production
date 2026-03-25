@@ -68,3 +68,67 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+# Firebase Security Rules Setup
+
+This project uses Firebase Firestore and Storage with secure production rules.
+If you deploy this project to your own Firebase account, you must manually update the rules in the Firebase console.
+
+## Firestore Rules
+
+1. Go to Firebase Console
+2. Select your project
+3. Navigate to Firestore Database -> Rules
+4. Replace the existing rules with:
+
+    rules_version = '2';
+    service cloud.firestore {
+      match /databases/{database}/documents {
+        
+        match /users/{userId} {
+          // Anyone signed in can read, but only the owner can write
+          allow read: if request.auth != null;
+          allow write: if request.auth != null && request.auth.uid == userId;
+        }
+    
+        match /{document=**} {
+          allow read, write: if false;
+        }
+      }
+    }
+
+5. Click Publish
+
+## Storage Rules
+
+1. Select your project
+2. Navigate to Storage -> Rules
+3. Replace the existing rules with:
+
+    rules_version = '2';
+    service firebase.storage {
+      match /b/{bucket}/o {
+    
+        // Match files in the "uploads" folder, named with the user's UID
+        match /uploads/{userId}/{allPaths=**} {
+          // Only allow the user who owns the folder to read/write
+          allow read, write: if request.auth != null && request.auth.uid == userId;
+        }
+    
+        // Deny all other access
+        match /{allPaths=**} {
+          allow read, write: if false;
+        }
+      }
+    }
+
+4. Click Publish
+
+## Important Notes
+ Make sure users are authenticated (Google Sign-In is enabled for this app).
+ 
+ Files must be uploaded to the correct path:
+   uploads/{user.uid}/{fileName}
+
+ Firestore documents must follow:
+   users/{user.uid}
