@@ -72,14 +72,12 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/t
 # Firebase Security Rules Setup
 
 This project uses Firebase Firestore and Storage with secure production rules.
-If you deploy this project to your own Firebase account, you must manually update the rules in the Firebase console.
+The rules are managed locally and deployed to Firebase using the Firebase CLI.
 
 ## Firestore Rules
 
-1. Go to Firebase Console
-2. Select your project
-3. Navigate to Firestore -> Rules
-4. Replace the existing rules with:
+1. After running firebase init and selecting Firestore, the firestore.rules file is generated.
+2. Open firestore.rules and replace the default rules with:
    
 ```
 rules_version = '2';
@@ -98,13 +96,13 @@ service cloud.firestore {
   }
 }
 ```
-5. Click Publish
+3. Deploy the Firestore rules:
+   firebase deploy --only firestore:rules
 
 ## Storage Rules
 
-1. Select your project
-2. Navigate to Storage -> Rules
-3. Replace the existing rules with:
+1. After running firebase init and selecting Storage, the storage.rules file is generated.
+2. Open storage.rules and replace the default rules with:
 
 ```
 rules_version = '2';
@@ -125,7 +123,15 @@ service firebase.storage {
 }
 ```
 
-4. Click Publish
+3. Deploy the Storage rules:
+   firebase deploy --only storage
+
+## Deploy Both Rules
+To deploy both Firestore and Storage rules at the same time:
+
+firebase deploy --only firestore:rules,storage
+
+After making changes to either rule file, run the appropriate deployment command again.
 
 ## Important Notes
  Make sure users are authenticated (Google Sign-In is enabled for this app).
